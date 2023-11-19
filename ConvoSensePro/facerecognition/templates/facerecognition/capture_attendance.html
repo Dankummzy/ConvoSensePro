@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+{% block content %}
+<!-- Update your HTML template -->
+<div class="container mb-5">
+    <h1 class="text-center">Real-time Attendance Capture</h1>
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Add a video container -->
+            <div id="video-container">
+                <video id="webcam-feed" autoplay playsinline class="img-fluid mb-3"></video>
+                <!-- The video feed will be displayed here -->
+            </div>
+            <p id="result-message" class="mb-3"></p>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+
+<script>
+    function startRealTimeRecognition() {
+    var video = document.getElementById('webcam-feed');
+    var resultMessage = document.getElementById('result-message');
+
+    // Use getUserMedia to access the camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+            video.srcObject = stream;
+            video.onloadedmetadata = function (e) {
+                video.play();
+
+                // Start the real-time recognition
+                setInterval(captureAndRecognize, 1000); // Adjust the interval as needed
+            };
+        })
+        .catch(function (err) {
+            console.log('Error accessing webcam:', err);
+        });
+}
+
+function captureAndRecognize() {
+    var video = document.getElementById('webcam-feed');
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    var imageData = canvas.toDataURL('image/jpeg');
+
+    // Send the captured image data to the server for recognition
+    sendImageForRecognition(imageData);
+}
+
+function sendImageForRecognition(imageData) {
+    $.ajax({
+        type: 'POST',
+        url: '{% url "capture_attendance" event.id %}',
+        data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+            'image_data': imageData,
+            'event_id': {{ event.id }},
+        },
+        dataType: 'json',
+        success: function (response) {
+            var resultMessage = document.getElementById('result-message');
+            resultMessage.textContent = response.message;
+        },
+        error: function () {
+            console.log('Error capturing image.');
+        }
+    });
+}
+
+$(document).ready(function () {
+    startRealTimeRecognition();
+});
+
+</script>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% load bootstrap5 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block content %}
+    <h1>Manage Attendance for {{ event.name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance_records %}
+                    <tr>
+                        <td>{{ record.user.username }}</td>
+                        <td>{{ record.timestamp }}</td>
+                        <td>{{ record.get_present_display }}</td>
+                        <td>
+                            <input type="hidden" name="user_id" value="{{ record.user.id }}">
+                            <select name="action">
+                                <option value="mark_present">Mark Present</option>
+                                <!-- Add more action options if needed -->
+                            </select>
+                            <button type="submit">Apply</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+{% endblock content %}

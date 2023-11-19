@@ -1,0 +1,40 @@
+<!-- users/edit_profile.html -->
+{% extends 'base.html' %}
+{# Load the tag library #}
+{% load bootstrap5 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Your Profile</h2>
+    <form method="post" class="w-50 text-center" enctype="multipart/form-data">    
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="first_name">First Name:</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user_profile.user.first_name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="last_name">Last Name:</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user_profile.user.last_name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ user_profile.user.email }}" required>
+        </div>
+        <!-- Additional profile fields here -->
+
+        <!-- Image upload field -->
+        <!-- <div class="form-group">
+            <label for="profile_image">Profile Image:</label>
+            <input type="file" class="form-control-file" id="profile_image" name="profile_image" accept="image/*">
+        </div> -->
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
+{% endblock %}
+

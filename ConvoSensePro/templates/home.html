@@ -1,0 +1,42 @@
+<!-- home.html -->
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block content %}
+<div class="jumbotron text-center">
+    <h1 class="display-4">Welcome to ConvoSensePro</h1>
+    <p class="lead">Your Automated Conference Attendance Counting System</p>
+    <hr class="my-4">
+    <p>Effortlessly manage and track conference attendance using advanced facial recognition technology.</p>
+    {% if user.is_authenticated %}
+        {% if user.is_staff %}  {# Check if the user is an admin (staff) #}
+            <a class="btn btn-primary btn-lg" href="{% url 'create_event' %}" role="button">Create Event</a>
+        {% endif %}
+    {% else %}
+        <a class="btn btn-primary btn-lg" href="{% url 'users:login' %}" role="button">Login</a>
+    {% endif %}
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Organize Events</h5>
+                <p class="card-text">Plan and manage conferences, meetings, and events with ease. Create unique registration links for your attendees.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Automated Attendance</h5>
+                <p class="card-text">Efficiently count attendance using facial recognition. Real-time recognition and reporting make tracking attendees a breeze.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

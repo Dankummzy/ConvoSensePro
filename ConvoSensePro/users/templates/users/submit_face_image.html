@@ -1,0 +1,83 @@
+<!-- submit_face_image.html file -->
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Ensure you're looking into the webcam, then click on capture once and continue looking for 5 seconds. After capture, you would see a sample below.</h2>
+
+    <!-- Add webcam container -->
+    <div id="webcam-container">
+        <div id="webcam-preview"></div>
+        <button id="capture-button" class="btn btn-primary mb-3 mt-3 w-50">Capture</button>
+    </div>
+</div>
+
+<!-- Include WebcamJS library -->
+<script src="/static/webcamjs/webcam.min.js"></script>
+
+
+<!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Add JavaScript code to interact with the webcam -->
+<script>
+    Webcam.set({
+        width: 640,  // Adjust the width and height as needed
+        height: 480,
+        dest_width: 640,
+        dest_height: 480,
+        image_format: 'jpeg',
+        jpeg_quality: 90,
+        constraints: {
+            video: {
+                facingMode: 'user',  // 'user' for front camera, 'environment' for rear camera (if available)
+            }
+        }
+    });
+
+    Webcam.attach('#webcam-preview');
+
+    // Counter for captured images
+    let captureCount = 0;
+
+    document.getElementById('capture-button').addEventListener('click', function () {
+        Webcam.snap(function (data_uri) {
+            // Send the captured image data (data_uri) to the server for processing
+            console.log('CSRF Token:', '{{ csrf_token }}');
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "users:submit_face_image" %}',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}', // Include CSRF token
+                    'image_data': data_uri,
+                    'capture_count': captureCount
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        // Image captured and processed successfully
+                        console.log('Image captured and saved: ' + response.message);
+
+                        // Increment the capture count
+                        captureCount++;
+
+                        // Display the captured image on the page (for testing)
+                        $('#captured-images').append('<img src="' + data_uri + '" alt="Captured Image">');
+                    } else {
+                        console.error('Failed to process image: ' + response.message);
+                    }
+                },
+                error: function () {
+                    console.error('Error capturing image.');
+                }
+            });
+        });
+    });
+</script>
+<div id="captured-images"></div>
+
+{% endblock %}
+

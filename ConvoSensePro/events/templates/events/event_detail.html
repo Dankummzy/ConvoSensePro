@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h3 class="display-4"><span>Event Name:</span> {{ event.name }}</h3>
+    <p class="lead"><strong>Event Date:</strong> {{ event.date }}</p>
+    <p class="lead"><strong>Event Location:</strong> {{ event.location }}</p>
+    <h3 class="mt-4">Event Capacity:</h3>
+    <p><strong>Capacity:</strong> {{ event.capacity }}</p>
+
+    
+    
+    
+    <h3 class="mt-4">Attendees:</h3>
+    <ul class="list-group">
+        {% if attendees %}
+            {% for attendee in attendees %}
+                <li class="list-group-item">{{ attendee.name }} - {{ attendee.email }}</li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item">No attendees for now.</li>
+        {% endif %}
+    </ul>
+    
+    <a href="#" class="btn btn-primary mt-4">View Attendance Report</a>
+</div>
+{% endblock %}
+
